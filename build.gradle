@@ -1,0 +1,47 @@
+version '1.0-SNAPSHOT'
+
+project.ext {
+    mainClass = "melomancool.chip8.MainKt"
+}
+
+buildscript {
+    ext.kotlinVersion = '1.3.41'
+
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+apply plugin: 'kotlin'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlinVersion"
+
+    implementation "org.pcollections:pcollections:3.1.0"
+}
+
+jar {
+    manifest {
+        attributes(
+            'Main-Class': mainClass
+        )
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
+
+apply plugin:'application'
+mainClassName = mainClass
+applicationDefaultJvmArgs = ["-ea"]
+
+tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
+    kotlinOptions.freeCompilerArgs += ["-Xuse-experimental=kotlin.ExperimentalUnsignedTypes"]
+}
